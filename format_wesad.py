@@ -23,11 +23,8 @@ def downsample(signal, downsample_factor=4):
     return downsampled_signal
 
 
-
-
-
 class SubjectData:
-    def __init__(self, subject_id, sample_length=300):
+    def __init__(self, subject_id, sample_length=200):
         self.metadata = {}
         self.features = {}
         self.signals = {}
@@ -66,7 +63,7 @@ class SubjectData:
                 info = _convert_readme_info_to_numerical(info, study_prerequisite_question)
                 self.metadata[study_prerequisite_question] = np.ones((self.num_features, 1)) * info
 
-    def _extract_time_windows(self, normalize=True, samples_in_window=300):
+    def _extract_time_windows(self, normalize=True, samples_in_window=200):
         num_windows_list = []
         # For each signal in self.chest
         for signal_name in self.signals:
@@ -98,7 +95,33 @@ class SubjectData:
         return num_windows_list[0]
 
 
-class SubjectDataset:
+class ECGSynthesisDataset:
+    def __init__(self):
+        self.subjects = {}
+        for subject_id in tqdm(SUBJECT_IDS, desc='Loading Data From Each Subject'):
+            self.subjects[subject_id] = SubjectData(subject_id)
+        self.num_features = self.subjects[subject_id].num_features
+
+        self.ecg_samples = self.subjects[SUBJECT_IDS[0]].features['chest_ECG'][:, :, 0]
+        for subject_id in SUBJECT_IDS:
+            if subject_id == SUBJECT_IDS[0]:
+                continue
+            self.ecg_samples = np.concatenate((self.ecg_samples, self.subjects[subject_id].features['chest_ECG'][:, :, 0]), axis=0)
+
+        # print(self.ecg_samples)
+        print(self.ecg_samples.shape)
+        df = pd.DataFrame(self.ecg_samples)
+        df[self.ecg_samples.shape[1]] = pd.Series([0]*self.ecg_samples.shape[0])
+        print(df.head())
+
+        train_df = df.loc[:self.ecg_samples.shape[0]*.75]
+        test_df = df.loc[self.ecg_samples.shape[0] * .75:]
+
+        train_df.to_csv('train.csv')
+        test_df.to_csv('test.csv')
+
+
+class DoppelGANgerDataset:
     def __init__(self):
         self.subjects = {}
         self.data_feature_output = []
@@ -195,9 +218,16 @@ def main():
     Loads the data from each subject listed in
     :return: Saves three files
     """
-    s = SubjectDataset()
-    s.create_doppelganger_data()
+    # s = DoppelGANgerDataset()
+    # s.create_doppelganger_data()
+    s = ECGSynthesisDataset()
 
 
 if __name__ == '__main__':
-    main()
+    # main()
+    df_train = pd.read_csv('train.csv')
+    print(df_train.info())
+    print(df_train.head())
+    df_test = pd.read_csv('test.csv')
+    print(df_test.info())
+    print(df_test.head())
