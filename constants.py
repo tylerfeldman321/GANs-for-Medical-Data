@@ -7,9 +7,12 @@ ATTRIBUTE_KEYS = {'Age': OutputType.DISCRETE, 'Weight (kg)': OutputType.DISCRETE
 
 # Path configurations
 DATA_DIR = os.path.join('data', 'WESAD')
+ECG_SYN_OUTPUT_DIR = 'output_ecg_syn'
+DOPPELGANGER_OUTPUT_DIR = 'output_doppelganger_files'
 
 # Dataset constants
 SUBJECT_IDS = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17]
+# SUBJECT_IDS = [2, 3]
 E4_DATA_FILENAMES = ['ACC.csv', 'BVP.csv', 'EDA.csv', 'HR.csv', 'IBI.csv', 'TEMP.csv', 'tags.csv', 'info.txt']
 
 WRIST_KEYS = ['ACC', 'BVP', 'EDA', 'TEMP']
