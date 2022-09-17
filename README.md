@@ -11,7 +11,11 @@ Synthetic data could resolve this issue, allowing machine learning practitioners
 ## Data Preprocessing
 The WESAD dataset contains raw time series data for 15 subjects. For generation of synthetic data, it was easiest to split up the time series data into small chunks, which would each be a data point / sample in our dataset. To do this, a naive approach could be picking a fixed time length and splitting up the data into chunks that long. However, this medical data is highly dependent on time. An electrocardiogram (ECG) signal contains different sections and peaks that repeat. Therefore, it makes sense to split the data into the individual signals that repeat. To do this, we can extract the location of the R-peaks for the ECG signals, and use that to split the data.
 
-Additionally, the data suffers from noise. I experimented with de-noising the data using a moving average and other types of filters. I found that smoothing with a moving average filter improved the performance of the GAN (as measured by the maximum mean discrepancy, see below) compared with when using the unfiltered signals. Below are different examples of preprocessing I experimented with.
+Additionally, the data suffers from noise. I experimented with de-noising the data using a moving average and other types of filters. I found that smoothing with a moving average filter improved the performance of the GAN (as measured by the maximum mean discrepancy, see below) compared with when using the unfiltered signals. Below are different examples of preprocessing I experimented with. The original signal with the identified R-peak (red dot) is shown on the left, with various preprocessing methods shown on the right. I found that the smoothed R-peak-centered signal resulted in the best MMD score.
+
+<p float="left">
+  <img src="https://github.com/tylerfeldman321/GANs-for-Medical-Data/blob/main/Figures/preprocessing-examples.png" width=1000/>
+</p>
 
 ## Results
 ### Evaluation Metrics
